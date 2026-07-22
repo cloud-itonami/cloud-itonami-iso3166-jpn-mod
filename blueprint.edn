@@ -9,4 +9,33 @@
  :itonami.blueprint/governor :defense-transfer-compliance-governor
  :itonami.blueprint/robotics false
  :itonami.blueprint/required-technologies [:identity :forms :dmn :bpmn :audit-ledger]
- :itonami.blueprint/status :public-oss}
+ :itonami.blueprint/status :public-oss
+ :itonami.blueprint/maturity :implemented
+ :itonami.blueprint/implemented-slice
+ "src/defensecompliance/* (langgraph-clj StateGraph actor): facts.cljc
+ (Three Principles on Transfer of Defense Equipment and Technology +
+ Act on the Protection of Specially Designated Secrets +
+ procurement-qualification catalog grounded in mod.go.jp/mofa.go.jp/
+ cas.go.jp/meti.go.jp/japaneselawtranslation.go.jp sources only),
+ governor.cljc (Defense-Transfer Compliance Governor -- spec-basis/
+ no-fabrication HARD check, evidence-incomplete check,
+ unified-qualification-missing HARD check (全省庁統一資格), bid-suspended
+ HARD check (指名停止, unconditional), aptitude-assessment-missing HARD
+ check (適性評価, specially-designated-secrets track -- genuine legal
+ prerequisite), engagement-fee-mismatch check (three revenue lines),
+ confidence-floor/actuation gate, double-draft/double-submit guards per
+ track), store.cljc (MemStore + DatomicStore via
+ kotoba-lang/langchain-store, engagement entity tracking
+ :three-principles and :specially-designated-secrets tracks
+ independently plus engagement-level unified-qualification/
+ bid-suspension gates), registry.cljc (pure-function filing-draft/
+ filing-submit record construction), defensecompliancellm.cljc (mock
+ Compliance Advisor), operation.cljc (intake -> advise -> govern ->
+ decide -> [request-approval ->] commit/hold StateGraph), phase.cljc
+ (0->3 rollout, :filing/draft and :filing/submit permanently excluded
+ from every phase's :auto set). 30 tests / 101 assertions passing
+ (governor contract + store parity + facts + phase + registry),
+ clj-kondo clean (0 errors, 6 non-fatal unused-binding/unused-require
+ warnings in test files). Kept strictly at the compliance-PROCESS
+ level throughout -- no classified or operational content modeled or
+ invented."}

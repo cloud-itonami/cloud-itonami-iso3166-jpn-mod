@@ -1,5 +1,14 @@
 # Business Model: Independent MOD Defense-Equipment Transfer & Security-Clearance Compliance Service — Japan (MOD)
 
+Implementation: `src/defensecompliance/` — see README.md's
+Implementation section. The Trust Controls below are enforced in code
+by `defensecompliance.governor` (spec-basis/no-fabrication HARD check,
+unified-qualification-missing HARD check, bid-suspended HARD check,
+aptitude-assessment-missing HARD check, engagement-fee-mismatch check,
+confidence-floor/actuation gate, double-draft/double-submit guards) and
+`defensecompliance.phase` (`:filing/submit` absent from every phase's
+`:auto` set).
+
 ## Classification
 
 - Repository: `cloud-itonami-iso3166-jpn-mod`
