@@ -1,5 +1,16 @@
 # Operator Guide
 
+Implementation: `src/defensecompliance/` (see README.md's
+Implementation section for the module map). "the advisor" below is
+`defensecompliance.defensecompliancellm`; "the Defense-Transfer
+Compliance Governor" is `defensecompliance.governor`; the Three
+Principles classification and Specially-Designated-Secrets clearance
+tracks are separate `:track`s (`:three-principles` /
+`:specially-designated-secrets`) on the same client engagement,
+assessed and filed independently. 全省庁統一資格 (unified qualification)
+verification and 指名停止 (bid-suspension) status are engagement-level
+gates checked on every `:filing/submit`, regardless of track.
+
 ## First Deployment
 
 1. Confirm the client already uses (or has completed the equivalent of)
