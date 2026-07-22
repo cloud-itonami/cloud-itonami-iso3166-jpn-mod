@@ -3,6 +3,7 @@
  :itonami.blueprint/iso3166 "JPN-MOD"
  :itonami.blueprint/iso3166-parent "JPN"
  :itonami.blueprint/ooyake-id "gov.jpn.mod"
+ :itonami.blueprint/organization {:ooyake-id "gov.jpn.mod" :official-url "https://www.mod.go.jp/" :head-role "防衛大臣" :hq-line-local "東京都新宿区市谷本村町5-1" :hq-phone "03-3268-3111" :contact-page "https://www.mod.go.jp/"}
  :itonami.blueprint/domain :public-sector/mod-defense-compliance
  :itonami.blueprint/license "AGPL-3.0-or-later"
  :itonami.blueprint/social-impact [:defense-transfer-clarity :security-clearance-access :public-spend-transparency]
