@@ -1,0 +1,318 @@
+;; Regulatory source register for JPN-MOD (防衛省, Japan Ministry of Defense)
+;; defense-equipment-transfer and security-clearance compliance.
+;;
+;; The README says the actor's facts.cljc is grounded in mod.go.jp / mofa.go.jp
+;; / cas.go.jp / meti.go.jp / japaneselawtranslation.go.jp sources. Until this
+;; file existed there was no citable list of WHICH sources those are, so no
+;; claim in this repository could be traced to a fetched authority. This is
+;; that list.
+;;
+;; Shape is tx-data (a vector of entity maps), like every other EDN corpus in
+;; this workspace, so it loads with
+;;   (d/transact conn (edn/read-string (slurp "facts.edn")))
+;; :source/id is the join key. A law or page not in this table has NO
+;; spec-basis for this repository -- extend the table, never invent an id or a
+;; URL.
+;;
+;; VERIFIED BY `nbb scripts/verify-facts.cljs`, which re-fetches every entry.
+;; Each carries a :source/verify tag naming WHICH check establishes it:
+;;
+;;   :e-gov-law-id   Resolve the law id through the e-Gov law API and require
+;;                   the title and the law number to still match. HTTP status
+;;                   is never consulted here and must not be: laws.e-gov.go.jp
+;;                   is a single-page app that answers HTTP 200 for
+;;                   /law/<anything>, renders "not found" client-side, and
+;;                   therefore cannot tell a real citation from an invented one.
+;;
+;;   :page-identity  Fetch and require four things together: a 2xx, a final
+;;                   URL that is still the page asked for, the declared
+;;                   charset, and the <title> recorded below.
+;;
+;;   :page-text      All of :page-identity, plus every string in
+;;                   :page/must-contain present in the de-tagged body.
+;;
+;; WHY NO PAGE ON www.mod.go.jp IS CITED HERE. Measured 2026-08-31: both
+;; https://www.mod.go.jp/ and a deep path answer HTTP 403 to an automated
+;; client with a 5639-byte "Just a moment..." Cloudflare challenge body at the
+;; requested URL -- a bot challenge, not a refusal-by-status, and not a page.
+;; The rule this register follows is that a host that refused to answer has
+;; NOT been cited and has NOT been measured as absent: not-cited and absent
+;; are different, and only the second could be recorded from a run that never
+;; got past the edge. The register therefore records the mod.go.jp gap as a
+;; :coverage entry below, and cites pages only on hosts this run actually
+;; read: www.cas.go.jp and www.japaneselawtranslation.go.jp. The same applies
+;; to www.mofa.go.jp (HTTP 403, 426-byte "Access Denied", Akamai edge).
+;;
+;; HOST ASSUMPTIONS ARE MEASURED AT RUN TIME, NOT DATED IN A COMMENT.
+;; The :host-behaviour entities below say what each host does with a path
+;; that does not exist. The verifier fetches a nonexistent path on every host
+;; in the register and fails if the answer has changed. A dated note saying
+;; "measured to refuse correctly" degrades into a constant the moment it is
+;; written; a declaration the run re-measures cannot.
+;;
+;; WHY www.cas.go.jp IS IN A DEFENSE REGISTER. 内閣官房 (Cabinet Secretariat)
+;; is the administrative authority behind BOTH of this repository's page-level
+;; regimes that are not statutes: the designation of 特定秘密 under the
+;; Specially-Designated-Secrets Act runs through designated organs centred on
+;; the Cabinet Secretariat, and the security-clearance regime under the
+;; Economic Security Act (重要経済安保情報の保護及び活用に関する法律) is
+;; administered by 内閣官房's 经济安保推进本部. The MOD's own site is the
+;; blocked host described above; the Cabinet Secretariat is the authority the
+;; statutes point at that this run could actually read.
+;;
+;; 防衛装備移転三原則 IS NOT CITED, AND THAT IS NOT AN OVERSIGHT. The Three
+;; Principles on Transfer of Defense Equipment are a 閣議決定 (cabinet
+;; decision, 2014-04-01, reaffirmed as 防衛装備移転三原則 in 2023-03-31
+;;国家安全保障戦略 revision), not a statute: they have no e-Gov law id, and
+;; the document lives on www.mod.go.jp -- the host that interposed a challenge
+;; this run. A cabinet decision whose only official home is a host that
+;; refuses automated clients cannot be cited on the strength of this run's
+;; reads, so its absence is recorded in :coverage below.
+;;
+;; :source/covers says why an entry is in a defense-transfer / clearance
+;; register. Claims stop at the level actually checked -- law identity, and
+;; for the page entries the title, URL, charset, and the de-tagged strings
+;; read on 2026-08-31. No article text is asserted, because none was read.
+
+[
+ ;; ── What each host does with a path that does not exist ────────────────────
+ ;; Re-measured on every run. A change here invalidates the check that rests
+ ;; on it, which is the point of writing it down as data.
+
+ {:source/id "host.www-cas-go-jp"
+  :source/kind :host-behaviour
+  :host/name "www.cas.go.jp"
+  :host/missing-path :refuses
+  :host/missing-status 404
+  :source/note "Re-measured 2026-08-31 with node fetch (the verifier's
+                client): the front page answers 200 (14503 bytes, title
+                `内閣官房ホームページ`) and the verifier's exact nonexistent
+                path /no-such-page-zzz999.html answers 404 at the requested
+                URL -- 6304 bytes, title `お探しのページが見つかりませんでし
+                た。｜内閣官房ホームページ`, no redirect, no challenge. Note
+                a directory-style missing path (no filename) answers 302
+                instead; the verifier measures a filename-shaped path, and
+                that is the behaviour declared here. http:// redirects to
+                https, so the :unexpected-redirect self-test discriminates on
+                this host. :refuses because the path is answered with a real
+                status-and-body that is not the page asked for."}
+
+ {:source/id "host.www-japaneselawtranslation-go-jp"
+  :source/kind :host-behaviour
+  :host/name "www.japaneselawtranslation.go.jp"
+  :host/missing-path :refuses
+  :host/missing-status 404
+  :source/note "Re-measured 2026-08-31 with node fetch (the verifier's
+                client): /laws/ answers 200 (44458 bytes UTF-8, title
+                `Search by Title - Law Search - Japanese Law Translation`) and
+                the verifier's exact nonexistent path answers 404 at the
+                requested URL -- 1667 bytes, title `Error - Japanese Law
+                Translation`, no redirect. http:// redirects to https, so the
+                :unexpected-redirect self-test discriminates on this host too.
+                :refuses because the path is answered with a real
+                status-and-body that is not the page asked for."}
+
+ ;; ── Coverage of what this register does NOT cite ─────────────────────────
+
+ {:source/id "coverage.mod"
+  :source/kind :coverage
+  :coverage/entries 10
+  :coverage/by-verify {:e-gov-law-id 5 :page-identity 4 :page-text 1}
+  :source/note "5 statutes, 4 :page-identity entries, 1 :page-text entry, and
+                2 :host-behaviour entities. NOT CITED, and why:
+                (1) www.mod.go.jp pages (including 防衛装備移転三原則 and the
+                調達 policy pages) -- the host interposed a 403 Cloudflare
+                'Just a moment...' challenge to this run's automated client,
+                so nothing on it was read and nothing is claimed;
+                (2) www.mofa.go.jp pages -- HTTP 403 'Access Denied' (Akamai)
+                for the same reason; (3) 防衛装備移転三原則 itself -- a 閣議決
+                定, not a statute, with no e-Gov law id and its official text
+                hosted only on the challenged mod.go.jp host. A later run with
+                a browser-grade client that reads those hosts should MOVE these
+                citations in; until then the gap is the finding, not an
+                oversight."}
+
+ ;; ── Statutes: identity as e-Gov returned it at retrieval time ────────────
+ ;; Re-verified through the e-Gov law API on 2026-08-31.
+
+ {:source/id "law.mod.mod-establishment-act"
+  :source/kind :statute
+  :source/title "防衛省設置法"
+  :source/publisher "e-Gov 法令検索 (Digital Agency)"
+  :source/url "https://laws.e-gov.go.jp/law/329AC0000000164"
+  :source/verify :e-gov-law-id
+  :egov/law-id "329AC0000000164"
+  :egov/law-title "防衛省設置法"
+  :egov/law-num "昭和二十九年法律第百六十四号"
+  :source/retrieved-at "2026-08-31"
+  :source/covers #{:agency-establishment :agency-organization}
+  :source/note "The act that creates the MOD and fixes its 補助組織 (bureaux,
+                including 防衛装備庁). Identity only: the organisation chart
+                and task allocations are article text and are NOT asserted."}
+
+ {:source/id "law.mod.self-defense-forces-act"
+  :source/kind :statute
+  :source/title "自衛隊法"
+  :source/publisher "e-Gov 法令検索 (Digital Agency)"
+  :source/url "https://laws.e-gov.go.jp/law/329AC0000000165"
+  :source/verify :e-gov-law-id
+  :egov/law-id "329AC0000000165"
+  :egov/law-title "自衛隊法"
+  :egov/law-num "昭和二十九年法律第百六十五号"
+  :source/retrieved-at "2026-08-31"
+  :source/covers #{:jsdf-organization :contracting-authority}
+  :source/note "The Self-Defense Forces Act -- the statute under which MOD/
+                JSDF procurement contracts are made and under which 指名停止
+                (bid-suspension) measures against contractors are taken
+                (article 76-6 et seq. is article text and is NOT asserted
+                here). Promulgated the same day as the establishment act."}
+
+ {:source/id "law.mod.specially-designated-secrets-act"
+  :source/kind :statute
+  :source/title "特定秘密の保護に関する法律"
+  :source/publisher "e-Gov 法令検索 (Digital Agency)"
+  :source/url "https://laws.e-gov.go.jp/law/425AC0000000108"
+  :source/verify :e-gov-law-id
+  :egov/law-id "425AC0000000108"
+  :egov/law-title "特定秘密の保護に関する法律"
+  :egov/law-num "平成二十五年法律第百八号"
+  :source/retrieved-at "2026-08-31"
+  :source/covers #{:specially-designated-secrets :clearance-prerequisite}
+  :source/note "特定秘密保護法. The statute behind the
+                :specially-designated-secrets track's clearance prerequisite.
+                Identity only: which organs may designate, the 5/10-year
+                designation periods, and the 合格基準 for the 適性評価 are
+                article text and are NOT asserted."}
+
+ {:source/id "law.mod.sds-enforcement-order"
+  :source/kind :statute
+  :source/title "特定秘密の保護に関する法律施行令"
+  :source/publisher "e-Gov 法令検索 (Digital Agency)"
+  :source/url "https://laws.e-gov.go.jp/law/426CO0000000336"
+  :source/verify :e-gov-law-id
+  :egov/law-id "426CO0000000336"
+  :egov/law-title "特定秘密の保護に関する法律施行令"
+  :egov/law-num "平成二十六年政令第三百三十六号"
+  :source/retrieved-at "2026-08-31"
+  :source/covers #{:specially-designated-secrets :clearance-prerequisite}
+  :source/note "Cabinet Order enforcing the Specially-Designated-Secrets Act
+                -- the instrument that carries the operational detail the act
+                delegates. Identity only; its designated-organ lists are order
+                text and are NOT asserted."}
+
+ {:source/id "law.mod.security-clearance-act"
+  :source/kind :statute
+  :source/title "重要経済安保情報の保護及び活用に関する法律"
+  :source/publisher "e-Gov 法令検索 (Digital Agency)"
+  :source/url "https://laws.e-gov.go.jp/law/506AC0000000027"
+  :source/verify :e-gov-law-id
+  :egov/law-id "506AC0000000027"
+  :egov/law-title "重要経済安保情報の保護及び活用に関する法律"
+  :egov/law-num "令和六年法律第二十七号"
+  :source/retrieved-at "2026-08-31"
+  :source/covers #{:security-clearance :specially-designated-secrets}
+  :source/note "The security-clearance statute (セキュリティ・クリアランス制度,
+                effective 2024-05-17 promulgation) -- the newer regime covering
+                clearance for persons handling 重要経済安保情報, administered
+                through 内閣官房. Identity only: the clearance-granting
+                procedure and survelliance conditions are article text and are
+                NOT asserted."}
+
+ ;; ── Pages on www.cas.go.jp: citable because this run fetched them live ───
+
+ {:source/id "page.cas.home"
+  :source/kind :page
+  :source/title "内閣官房ホームページ"
+  :source/publisher "内閣官房 (Cabinet Secretariat)"
+  :source/url "https://www.cas.go.jp/"
+  :page/title "内閣官房ホームページ"
+  :source/verify :page-identity
+  :source/retrieved-at "2026-08-31"
+  :source/covers #{:agency-secretariat-landing}
+  :source/note "Cabinet Secretariat front page. 14503 bytes UTF-8 (the default
+                charset when the register does not declare one), served at the
+                requested URL with no redirect. Title is the host's
+                institutional name. Charset is left undeclared so the entry
+                joins the verifier's :page-identity self-test pool -- a
+                declared charset that the host always honours is a constant
+                the check never tests."}
+
+ {:source/id "page.cas.houdou"
+  :source/kind :page
+  :source/title "報道発表 | 内閣官房ホームページ"
+  :source/publisher "内閣官房 (Cabinet Secretariat)"
+  :source/url "https://www.cas.go.jp/jp/houdou/index.html"
+  :page/title "報道発表 | 内閣官房ホームページ"
+  :page/charset "utf-8"
+  :source/verify :page-text
+  :page/must-contain ["報道発表" "内閣官房"]
+  :source/retrieved-at "2026-08-31"
+  :source/covers #{:press-releases :secretariat-disclosure}
+  :source/note "Cabinet Secretariat press-release index -- the disclosure
+                surface where 特定秘密 designation statistics and clearance
+                regime rollouts are announced. 8987 bytes UTF-8, served at the
+                requested URL with no redirect. Title and the must-contain
+                strings were all read at retrieval time; the needles
+                discriminate a real press-release index from a generic 404 or
+                wrong-URL response."}
+
+ ;; ── Page on a SECOND host -- the JLT translation portal. The page
+ ;;    self-tests need at least two hosts in the candidate pool, or the
+ ;;    four :page branches of the verifier would all burst one host. ──────
+
+ {:source/id "page.cas.cbrne"
+  :source/kind :page
+  :source/title "ＣＢＲＮＥテロ対策会議｜内閣官房ホームページ"
+  :source/publisher "内閣官房 (Cabinet Secretariat)"
+  :source/url "https://www.cas.go.jp/jp/seisaku/cbrne_terotaisaku/index.html"
+  :page/title "ＣＢＲＮＥテロ対策会議｜内閣官房ホームページ"
+  :source/verify :page-identity
+  :source/retrieved-at "2026-08-31"
+  :source/covers #{:security-policy :cbrne-countermeasures}
+  :source/note "CBRNE terrorism-countermeasures conference page -- the
+                Cabinet Secretariat's standing cross-agency body on chemical,
+                biological, radiological, nuclear and explosive countermeasures,
+                the security-policy side of the secretariat this register's
+                defense-compliance operator reads alongside its statutes.
+                11492 bytes UTF-8, served at the requested URL with no
+                redirect. Charset is left undeclared so the entry joins the
+                verifier's :page-identity self-test pool."}
+
+ {:source/id "page.jlt.top"
+  :source/kind :page
+  :source/title "TOP - Japanese Law Translation"
+  :source/publisher "Japanese Law Translation (法務省)"
+  :source/url "https://www.japaneselawtranslation.go.jp/"
+  :page/title "TOP - Japanese Law Translation"
+  :source/verify :page-identity
+  :source/retrieved-at "2026-08-31"
+  :source/covers #{:english-translations}
+  :source/note "Portal top page, Japanese Law Translation (法務省). 15275
+                bytes UTF-8 (Content-Type declares charset=UTF-8), served at
+                the requested URL with no redirect. Charset is left undeclared
+                so this entry joins the verifier's :page-identity self-test
+                pool; it also keeps the pool at two hosts when a self-test
+                probe or a mutation retires one entry, which is why the
+                register carries three :page-identity entries across two
+                hosts."}
+
+ {:source/id "page.jlt.law-search"
+  :source/kind :page
+  :source/title "Search by Title - Law Search - Japanese Law Translation"
+  :source/publisher "Japanese Law Translation (法務省)"
+  :source/url "https://www.japaneselawtranslation.go.jp/laws/"
+  :page/title "Search by Title - Law Search - Japanese Law Translation"
+  :source/verify :page-identity
+  :source/retrieved-at "2026-08-31"
+  :source/covers #{:english-translations}
+  :source/note "Law Search / Search by Title on the Japanese Law Translation
+                portal (法務省). 44458 bytes UTF-8 (the default charset when
+                the register does not declare one), served at the requested
+                URL with no redirect. Charset is left undeclared so this entry
+                joins the verifier's :page-identity self-test pool alongside
+                page.cas.home -- two distinct hosts, so the :page branches of
+                the self-tests do not all burst one host. Whether 自衛隊法 or
+                the Specially-Designated-Secrets Act carries an English
+                translation there is a per-law question this entry does not
+                assert."}
+]
