@@ -1,5 +1,5 @@
 (ns defensecompliance.sim
-  "Demo driver -- `clojure -M:dev:run`. Walks a clean engagement through
+  "Demo driver -- `kbb -M:dev:run`. Walks a clean engagement through
   intake -> three-principles track assessment -> filing draft
   (escalate/approve/commit) -> filing submit (escalate/approve/commit),
   same for the specially-designated-secrets track, then shows HARD-hold
