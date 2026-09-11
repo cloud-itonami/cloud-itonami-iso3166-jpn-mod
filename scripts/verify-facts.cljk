@@ -1,16 +1,16 @@
 #!/usr/bin/env nbb
 ;; Re-checks every source in facts.edn against the live authority.
 ;;
-;;   nbb scripts/verify-facts.cljs                (from the repository root)
-;;   nbb scripts/verify-facts.cljs --facts <path>
-;;   nbb scripts/verify-facts.cljs --pace <ms>    (delay between page fetches)
+;;   nbb scripts/verify-facts.cljk                (from the repository root)
+;;   nbb scripts/verify-facts.cljk --facts <path>
+;;   nbb scripts/verify-facts.cljk --pace <ms>    (delay between page fetches)
 ;;
-;; JPN-MOD adaptation of cloud-itonami-iso3166-jpn-meti/scripts/verify-facts.cljs
+;; JPN-MOD adaptation of cloud-itonami-iso3166-jpn-meti/scripts/verify-facts.cljk
 ;; (copied 2026-08-29). The verifier's reason vocabulary (:title-drift,
 ;; :missing-text, :charset-drift, :unexpected-redirect, :challenge-interposed,
 ;; :nonexistent-law, :host-soft-404, :host-status-drift, :law-title-drift,
 ;; :law-num-drift, etc.) is unchanged from the proven pair, because the
-;; reason keywords are what scripts/mutation-check.cljs asserts by name and
+;; reason keywords are what scripts/mutation-check.cljk asserts by name and
 ;; the gate counts on the suite declaring at least 12 mutations caught by
 ;; their own reason. Per-ministry adaptation is in :host-behaviour entities
 ;; (re-measured) and in the chosen pages / law ids (re-fetched), not in the
@@ -684,7 +684,7 @@
         ;; with an uncaught error and exit 1 before any of the guards below can
         ;; speak. Exit 1 means "the register is wrong"; an unreadable or empty
         ;; register is "the run could not answer", which is exit 2. Found by
-        ;; scripts/mutation-check.cljs, which asked for "declares 0 sources"
+        ;; scripts/mutation-check.cljk, which asked for "declares 0 sources"
         ;; and got a stack trace instead.
         pool (vec (when (seq by-host)
                     (apply concat

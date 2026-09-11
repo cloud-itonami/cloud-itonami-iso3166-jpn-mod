@@ -2,8 +2,8 @@
 ;; Breaks facts.edn one way at a time and requires verify-facts.cljs to object
 ;; FOR THE REASON IT NAMES.
 ;;
-;;   nbb scripts/mutation-check.cljs              (structural only -- no network)
-;;   nbb scripts/mutation-check.cljs --network    (also the fetching branches)
+;;   nbb scripts/mutation-check.cljk              (structural only -- no network)
+;;   nbb scripts/mutation-check.cljk --network    (also the fetching branches)
 ;;
 ;; WHY THE REASON AND NOT THE COLOUR.
 ;; A negative test that asserts only "the run went red" counts a run that went
@@ -27,7 +27,7 @@
 ;; way, because a blocked run establishes nothing about the mutation.
 ;;
 ;; This is the JPN-JFTC adaptation of the JPN-METI mutation suite (copy of
-;; cloud-itonami-iso3166-jpn-meti/scripts/mutation-check.cljs, 2026-08-29).
+;; cloud-itonami-iso3166-jpn-meti/scripts/mutation-check.cljk, 2026-08-29).
 ;; The structural shape, the assertion discipline, and the structural-text
 ;; mutations are unchanged from the proven pair. Entity-id and URL
 ;; references have been moved to the JFTC register's actual entity ids:
@@ -70,7 +70,7 @@
 ;; mutation still is. If they all go red, the wrong thing was broken and the
 ;; demonstration proves nothing -- a failure mode this workspace hit four times
 ;; in one day.
-(def verifier-path (flag "--verifier" "scripts/verify-facts.cljs"))
+(def verifier-path (flag "--verifier" "scripts/verify-facts.cljk"))
 
 ;; --only re-runs named mutations. The suite reports INCONCLUSIVE when a bot
 ;; challenge stood in the way and tells you to re-run rather than reading it as
