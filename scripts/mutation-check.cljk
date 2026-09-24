@@ -47,7 +47,7 @@
 ;; vocabulary, is the thing that is per-ministry.
 
 (ns mutation-check
-  (:require [clojure.edn :as edn]
+  (:require [kotoba.lang.edn :as edn]
             [kotoba.lang.text :as str]
             [promesa.core :as p]
             ["fs" :as fs]
